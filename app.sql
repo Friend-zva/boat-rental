@@ -106,6 +106,8 @@ CREATE TABLE Rental(
 CREATE SEQUENCE seq_rental_id
   START WITH 1;
 
+CREATE INDEX idx_rental_unit_datetime ON Rental(unit_id, datetime_, hours_);
+
 ALTER TABLE Rental
   ALTER COLUMN id SET DEFAULT nextval('seq_rental_id');
 
@@ -122,6 +124,8 @@ ALTER TABLE Water_Bike
 ALTER TABLE Rental
   ADD CONSTRAINT FK_Rental_Unit FOREIGN KEY (unit_id) REFERENCES Unit(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
+CREATE INDEX idx_fk_rental_unit ON Rental(unit_id);
+
 ALTER TABLE Rental
   ADD CONSTRAINT FK_Rental_Employee FOREIGN KEY (employee_id) REFERENCES Employee(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
@@ -134,7 +138,7 @@ INSERT INTO Employee(last_name, first_name, phone, address_)
   VALUES ('Zaikin', 'Vladimir', '+79870000001', 'Saratov');
 
 INSERT INTO Employee(last_name, first_name, phone, address_)
-  VALUES ('Rodionov', 'Maxim', '+79870000002', 'Marks');
+  VALUES ('Rodionov', 'Maxim', '+79870000002', 'Balakovo');
 
 INSERT INTO Employee(last_name, first_name, phone, address_)
   VALUES ('Sotnikov', 'Ilia', '+79870000003', 'Terbuni');

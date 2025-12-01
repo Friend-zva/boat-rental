@@ -25,7 +25,9 @@ FROM
 \echo '=== На сколько часов чаще арендуют ==='
 SELECT
     hours_ AS rental_hours,
-    COUNT(*) AS count
+(
+        SELECT
+            COUNT(*) AS count)
 FROM
     Rental
 GROUP BY
@@ -53,7 +55,9 @@ FROM
     JOIN Unit u ON r.unit_id = u.id
     JOIN Type_Unit tu ON u.type_id = tu.id
 GROUP BY
-    tu.name_;
+    tu.name_
+HAVING
+    COUNT(*) > 1;
 
 \echo '=== Самые дешевые единицы ==='
 SELECT
@@ -116,14 +120,20 @@ LIMIT 5;
 SELECT
     l.first_name,
     l.last_name,
-    COUNT(*) AS count
+(
+        SELECT
+            COUNT(*)
+        FROM
+            Rental
+        WHERE
+            lessee_id = l.id) AS count
 FROM
-    Rental r
-    JOIN Lessee l ON r.lessee_id = l.id
-GROUP BY
-    r.lessee_id,
-    l.first_name,
-    l.last_name
+    Lessee l
+WHERE
+    l.id IN ( SELECT DISTINCT
+            lessee_id
+        FROM
+            Rental)
 ORDER BY
     count DESC
 LIMIT 5;
@@ -172,6 +182,25 @@ WHERE
 ORDER BY
     degree_wear DESC;
 
+\echo '=== Самые не популярные единицы ==='
+SELECT
+    u.id,
+    u.price,
+    u.degree_wear
+FROM
+    Unit u
+WHERE
+    NOT EXISTS (
+        SELECT
+            *
+        FROM
+            Rental r
+        WHERE
+            r.unit_id = u.id)
+ORDER BY
+    u.price
+LIMIT 5;
+
 -- ==========  Tests   ==========
 \echo '=== Добавление работника ==='
 \echo '= before ='
@@ -180,7 +209,7 @@ SELECT
 FROM
     Employee;
 
-CALL AddEmployee('122', 'homka', '89780000122', 'Сибирь');
+CALL AddEmployee('122', 'homka', '+79780000122', 'Сибирь');
 
 \echo '= after  ='
 SELECT
