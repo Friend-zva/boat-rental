@@ -82,13 +82,13 @@ ALTER TABLE Unit
   ALTER COLUMN id SET DEFAULT nextval('seq_unit_id');
 
 CREATE TABLE Boat(
-  unit_id integer NOT NULL,
+  unit_id integer NOT NULL UNIQUE,
   seats integer CHECK (seats IN (2, 4)),
   color varchar(15) NOT NULL
 );
 
 CREATE TABLE Water_Bike(
-  unit_id integer NOT NULL,
+  unit_id integer NOT NULL UNIQUE,
   maker varchar(30),
   color varchar(15) NOT NULL
 );
